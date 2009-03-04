@@ -4,7 +4,7 @@ class <%= migration_name %> < ActiveRecord::Migration
       t.string :queue_name
       t.text :data
       t.boolean :processed, :default => false, :null => false
-      t.datetime :process_at
+      t.datetime :process_at, :null => false
 <% unless options[:skip_timestamps] %>
       t.timestamps
 <% end -%>

@@ -3,7 +3,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string :queue_name
     t.text :data
     t.string :token, :default => nil
-    t.datetime :process_at
+    t.datetime :process_at, :null => false
     t.boolean :processed, :default => false, :null => false
 
     t.timestamps
