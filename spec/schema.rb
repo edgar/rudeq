@@ -3,12 +3,13 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string :queue_name
     t.text :data
     t.string :token, :default => nil
+    t.datetime :process_at
     t.boolean :processed, :default => false, :null => false
 
     t.timestamps
   end
   add_index :rude_queues, :processed
-  add_index :rude_queues, [:queue_name, :processed]
+  add_index :rude_queues, [:queue_name, :processed, :process_at]  
 
   create_table :somethings, :force => true do |t|
     t.string :name

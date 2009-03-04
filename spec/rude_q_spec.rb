@@ -91,8 +91,9 @@ describe RudeQ::ClassMethods do # RudeQueue extends ClassMethods
   
   describe ".set" do
     it "should delegate to :create!" do
-      RudeQueue.should_receive(:create!).with(:queue_name => 'abcde', :data => :magical_planet)
-      RudeQueue.set('abcde', :magical_planet)
+      t = Time.now
+      RudeQueue.should_receive(:create!).with(:queue_name => 'abcde', :data => :magical_planet, :process_at => t)
+      RudeQueue.set('abcde', :magical_planet, t)
     end
     it "should return nil" do
       RudeQueue.set('abcde', "something").should be(nil)

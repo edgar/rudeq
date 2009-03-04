@@ -42,10 +42,10 @@ module RudeQ
     #   -> *other_sausage*
     #   >> RudeQueue.get(:sausage_queue)
     #   -> nil
-    def set(queue_name, data)
+    def set(queue_name, data, process_at = Time.now)
       queue_name = sanitize_queue_name(queue_name)
 
-      self.create!(:queue_name => queue_name, :data => data)
+      self.create!(:queue_name => queue_name, :data => data, :process_at => process_at)
       return nil # in line with Starling
     end
 
@@ -169,8 +169,8 @@ module RudeQ
       def fetch_with_lock(klass, qname) # :nodoc:
         klass.transaction do
           record = klass.find(:first,
-            :conditions => {:queue_name => qname, :processed => false},
-            :lock => true, :order => "id ASC", :limit => 1)
+            :conditions => ["queue_name = ? AND processed = ? AND process_at < ?", qname, false, Time.now.utc],
+            :lock => true, :order => "process_at ASC", :limit => 1)
       
           return yield(record)
         end
@@ -194,7 +194,7 @@ module RudeQ
       
       def fetch_with_lock(klass, qname) # :nodoc:
         token = get_unique_token
-        klass.update_all(["token = ?", token], ["queue_name = ? AND processed = ? AND token IS NULL", qname, false], :limit => 1, :order => "id ASC")
+        klass.update_all(["token = ?", token], ["queue_name = ? AND processed = ? AND process_at < ? AND token IS NULL", qname, false, Time.now.utc], :limit => 1, :order => "process_at ASC")
         record = klass.find_by_queue_name_and_token_and_processed(qname, token, false)
       
         return yield(record)

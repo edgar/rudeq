@@ -1,4 +1,4 @@
 rude_q_test:
   adapter: mysql
-  username: rude_q
+  username: root
   database: rude_q_test
